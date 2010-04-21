@@ -6117,9 +6117,17 @@ ifeq ($(BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE),true)
 	$(hide) echo "exclude_kernel_from_recovery_image=true" >> $@
 endif
 ifneq ($(BOARD_PARTIAL_OTA_UPDATE_PARTITIONS_LIST),)
-	$(hide) echo "partial_ota_update_partitions_list=$(BOARD_PARTIAL_OTA_UPDATE_PARTITIONS_LIST)" >> $@
+        $(hide) echo "partial_ota_update_partitions_list=$(BOARD_PARTIAL_OTA_UPDATE_PARTITIONS_LIST)" >> $@
 endif
-	$(hide) sort -o $@ $@
+
+ifeq ($(BUILDING_WITH_VSDK),true)
+        $(hide) echo "building_with_vsdk=true" >> $@
+endif
+ifneq ($(TARGET_OTA_ASSERT_DEVICE),)
+        $(hide) echo "ota_override_device=$(TARGET_OTA_ASSERT_DEVICE)" >> $@
+endif
+
+        $(hide) sort -o $@ $@
 
 $(call declare-0p-target,$(INSTALLED_FASTBOOT_INFO_TARGET))
 
