@@ -56,4 +56,6 @@ if [ -n "$BUILD_THUMBPRINT" ] ; then
   echo "ro.build.thumbprint=$BUILD_THUMBPRINT"
 fi
 
+echo "org.pixelproject.device=$CUSTOM_DEVICE"
+
 echo "# end build properties"
