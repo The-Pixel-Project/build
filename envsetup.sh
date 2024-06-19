@@ -834,6 +834,21 @@ function lunch()
     release=$(grep "BUILD_ID" build/make/core/build_id.mk | tail -1 | cut -d '=' -f 2 | cut -d '.' -f 1 | tr '[:upper:]' '[:lower:]')
     export TARGET_RELEASE=$release
 
+    if ! TARGET_RELEASE="" check_product $product $release
+    then
+        # if we can't find a product, try to grab it off the Pixel-Project GitHub
+        T=$(gettop)
+        cd $T > /dev/null
+        vendor/aosp/build/tools/roomservice.py $product
+        cd - > /dev/null
+        check_product $product $release
+    else
+        T=$(gettop)
+        cd $T > /dev/null
+        vendor/aosp/build/tools/roomservice.py $product true
+        cd - > /dev/null
+    fi
+
     TARGET_PRODUCT=$product \
     TARGET_BUILD_VARIANT=$variant \
     TARGET_RELEASE=$release \
@@ -857,21 +872,6 @@ function lunch()
       export INLINE_KERNEL_BUILDING=true
     else
       unset INLINE_KERNEL_BUILDING
-    fi
-
-    if ! check_product $product
-    then
-        # if we can't find a product, try to grab it off the YAAP GitHub
-        T=$(gettop)
-        cd $T > /dev/null
-        vendor/aosp/build/tools/roomservice.py $product
-        cd - > /dev/null
-        check_product $product
-    else
-        T=$(gettop)
-        cd $T > /dev/null
-        vendor/aosp/build/tools/roomservice.py $product true
-        cd - > /dev/null
     fi
 
     [[ -n "${ANDROID_QUIET_BUILD:-}" ]] || echo
